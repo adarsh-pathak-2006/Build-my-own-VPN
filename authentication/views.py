@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from .serializer import RegisterSerializer
 from django.db.models import Q
+from django.contrib.auth import get_user_model
+
+User=get_user_model()
 
 class RegisterAPI(APIView):
     def post(self, request):
