@@ -53,6 +53,8 @@ class PasswordSetupAPI(APIView):
         if serial.is_valid():
             password=serial.validated_data['password']
             session_data=cache.get(sessionCacheKey(id=id))
+            if not session_data:
+                return Response({'message':'registration session expired'}, status=400)
             if not session_data.get('verified'):
                 return Response({'message':'OTP not verified...verify otp first'}, status=400)
             User.objects.create_user(username=session_data['username'], email=session_data['email'], password=password)
