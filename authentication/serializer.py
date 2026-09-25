@@ -13,7 +13,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields=['username', 'email']
 
 class OtpSerializer(serializers.Serializer):
-    opt=serializers.CharField()
+    otp=serializers.CharField()
 
 class PasswordSerializer(serializers.Serializer):
     password=serializers.CharField()
