@@ -1,12 +1,19 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from django.contrib.auth.models import User
 
-class UserGetSerializer(ModelSerializer):
+class UserGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=['username', 'email']
+        read_only_fields=['username', 'email']
+
+class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=['username', 'email']
 
-class RegisterSerializer(ModelSerializer):
-    class Meta:
-        model=User
-        fields=['username', 'email', 'password']
+class OtpSerializer(serializers.Serializer):
+    opt=serializers.CharField()
+
+class PasswordSerializer(serializers.Serializer):
+    password=serializers.CharField()
