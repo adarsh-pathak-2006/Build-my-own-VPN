@@ -39,6 +39,7 @@ class OtpVerificationAPI(APIView):
                     session=cache.get(sessionCacheKey(id=id))
                     if session:
                         session['verified']=True
+                        cache.set(sessionCacheKey(id=id), session, timeout=500)
                         return Response({'message':'otp verified successfully you may now set the password'}, status=200)
                     return Response({'message':'registration session expired try registering again'}, status=400)
                 return Response({'message':'wrong otp entered enter the correct one'}, status=400)
@@ -55,5 +56,7 @@ class PasswordSetupAPI(APIView):
             if not session_data.get('verified'):
                 return Response({'message':'OTP not verified...verify otp first'}, status=400)
             User.objects.create_user(username=session_data['username'], email=session_data['email'], password=password)
+            cache.delete(otpCacheKey(id=id))
+            cache.delete(sessionCacheKey(id=id))
             return Response({'message':'User Registerd Successfully'}, status=201)
         return Response(serial.errors, status=400)
