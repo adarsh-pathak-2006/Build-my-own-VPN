@@ -21,7 +21,7 @@ class OtpCreationAPI(APIView):
             email=serial.validated_data['email']
             if User.objects.filter(Q(username=username) | Q(email=email)).exists():
                 return Response({'message':'username and email already exists'}, status=400)
-            otprefid=random.randint(100000, 999999)
+            otprefid=str(random.randint(100000, 999999))
             OTPCreation.delay(id=otprefid, email=email)
             cache.set(sessionCacheKey(id=otprefid), {'username':username, 'email':email, 'verified':False}, timeout=500)
             return Response({'message':'OTP generated successfully', "ref_id":otprefid}, status=201)
