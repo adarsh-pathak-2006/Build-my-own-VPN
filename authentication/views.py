@@ -33,17 +33,17 @@ class OtpVerificationAPI(APIView):
         serial=OtpSerializer(data=request.data)
         if serial.is_valid():
             otp=serial.validated_data['otp']
+            session=cache.get(sessionCacheKey(id=id))
+            if not session:
+                return Response({'message':'registration session expired or not found try registering again'}, status=400)
             generated_otp=cache.get(otpCacheKey(id=id))
-            if generated_otp:
-                if otp==generated_otp:
-                    session=cache.get(sessionCacheKey(id=id))
-                    if session:
-                        session['verified']=True
-                        cache.set(sessionCacheKey(id=id), session, timeout=500)
-                        return Response({'message':'otp verified successfully you may now set the password'}, status=200)
-                    return Response({'message':'registration session expired try registering again'}, status=400)
-                return Response({'message':'wrong otp entered enter the correct one'}, status=400)
-            return Response({'message':'otp expired try generating new otp'}, status=400)
+            if not generated_otp:
+                return Response({'message':'otp expired or not found try generating new otp'}, status=400)
+            if otp==generated_otp:
+                session['verified']=True
+                cache.set(sessionCacheKey(id=id), session, timeout=500)
+                return Response({'message':'otp verified successfully you may now set the password'}, status=200)
+            return Response({'message':'wrong otp entered, enter the correct one'}, status=400)
         return Response(serial.errors, status=400)
 
 class PasswordSetupAPI(APIView):
