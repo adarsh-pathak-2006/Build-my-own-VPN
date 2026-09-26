@@ -28,6 +28,9 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 GEMINI_API_KEY="jndfsbdfjkfsjlfbs"
+OTP_SERVICE_REFID=""
+OTP_SERVICE_IP=""
+OTP_SERVICE_URL=f"{OTP_SERVICE_IP}/{OTP_SERVICE_URL}"
 
 # Application definition
 
