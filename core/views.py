@@ -25,3 +25,4 @@ class SummaryCreationAPI(APIView):
             data=serial.save()
             TranscriptFetch.delay(id=data.id)
             return Response({'message':'Generation started..might take a moment', 'db_id':data.id})
+        return Response(serial.errors, status=400)
