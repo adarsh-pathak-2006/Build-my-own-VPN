@@ -9,7 +9,7 @@ from config.pagination import GeneralPagination
 class GeneratedSummaryListAPI(APIView):
     def get(self, request):
         paginator=GeneralPagination()
-        data=paginator.paginate_queryset(Summary.objects.select_related('user').filter(user=self.request.user).order_by("-time"))
+        data=paginator.paginate_queryset(Summary.objects.select_related('user').filter(user=self.request.user).order_by("-time"), request, view=self)
         serial=SummaryGenerationListSerializer(data, many=True)
         return paginator.get_paginated_response(serial.data)
 
@@ -23,7 +23,7 @@ class SummaryCreationAPI(APIView):
     def post(self, request):
         serial=SummaryGenerationSerializer(data=request.data)
         if serial.is_valid():
-            data=serial.save()
+            data=serial.save(user=request.user)
             TranscriptFetch.delay(id=data.id)
             return Response({'message':'Generation started..might take a moment', 'db_id':data.id})
         return Response(serial.errors, status=400)

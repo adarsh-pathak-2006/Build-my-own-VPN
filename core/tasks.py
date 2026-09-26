@@ -7,14 +7,26 @@ from ai.final_response import final_response
 
 @shared_task
 def TranscriptFetch(id):
-    api = YouTubeTranscriptApi()
     obj=get_object_or_404(Summary.objects.select_related('user'), id=id)
-    query = parse_qs(urlparse(obj.link).query)
-    video_id = query.get("v", [None])[0]
-    transcript = api.fetch(video_id)
+    
+    # Robust YouTube ID extraction
+    parsed_url = urlparse(obj.link)
+    video_id = None
+    if parsed_url.hostname == 'youtu.be':
+        video_id = parsed_url.path[1:]
+    elif parsed_url.hostname in ('www.youtube.com', 'youtube.com'):
+        if parsed_url.path == '/watch':
+            video_id = parse_qs(parsed_url.query).get('v', [None])[0]
+        elif parsed_url.path.startswith(('/embed/', '/v/')):
+            video_id = parsed_url.path.split('/')[2]
+    
+    if not video_id:
+        raise ValueError(f"Invalid YouTube URL: {obj.link}")
+        
+    transcript = YouTubeTranscriptApi.get_transcript(video_id)
     final=''
     for snippet in transcript:
-        final=final+snippet.text
+        final=final+snippet['text']
     response=final_response(transcript=final)
     obj.transcript=final
     obj.summary=response

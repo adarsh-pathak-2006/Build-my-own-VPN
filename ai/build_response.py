@@ -1,12 +1,21 @@
-from google.genai import Client
+from ollama import Client
 from django.conf import settings
 
-key=settings.GEMINI_API_KEY
 
-client = Client(api_key=key)
+client = Client(
+    host=settings.OLLAMA_HOST
+)
+
 
 def generate_response(prompt):
-    response = client.models.generate_content(
-    model='gemini-flash-2.5',
-    contents=prompt)
-    return response.text.strip()
+    response = client.chat(
+        model="qwen2.5:7b",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+    )
+
+    return response.message.content.strip()

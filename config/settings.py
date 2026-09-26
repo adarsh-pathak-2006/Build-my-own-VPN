@@ -11,26 +11,29 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-osk56qxr(r-&1s%v7j58e$j0w5vb7jdp45jc$@&ja2i@2+vmdi'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'default-insecure-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
-OLLAMA_HOST="jndfsbdfjkfsjlfbs"
-OTP_SERVICE_REFID=""
-OTP_SERVICE_IP=""
-OTP_SERVICE_URL=f"{OTP_SERVICE_IP}/{OTP_SERVICE_REFID}"
+OLLAMA_HOST = os.environ.get('OLLAMA_HOST', '')
+OTP_SERVICE_REFID = os.environ.get('OTP_SERVICE_REFID', '')
+OTP_SERVICE_IP = os.environ.get('OTP_SERVICE_IP', '')
+OTP_SERVICE_URL = f"{OTP_SERVICE_IP}/{OTP_SERVICE_REFID}"
 
 # Application definition
 
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
     'authentication', 'core',
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -150,3 +155,5 @@ CELERY_TASK_ROUTES = {
         "queue": "otp"
     }
 }
+
+CORS_ALLOW_ALL_ORIGINS = True

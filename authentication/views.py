@@ -60,5 +60,5 @@ class PasswordSetupAPI(APIView):
             User.objects.create_user(username=session_data['username'], email=session_data['email'], password=password)
             cache.delete(otpCacheKey(id=id))
             cache.delete(sessionCacheKey(id=id))
-            return Response({'message':'User Registerd Successfully'}, status=201)
+            return Response({'message':'User Registered Successfully'}, status=201)
         return Response(serial.errors, status=400)
