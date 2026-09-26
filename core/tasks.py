@@ -3,6 +3,7 @@ from celery import shared_task
 from .models import Summary
 from django.shortcuts import get_object_or_404
 from urllib.parse import urlparse, parse_qs
+from ai.final_response import final_response
 
 @shared_task
 def TranscriptFetch(id):
@@ -16,4 +17,12 @@ def TranscriptFetch(id):
         final=final+snippet.text
     obj.transcript=final
     obj.save()
-    return final
+    return f"transcript saved for id:{id}"
+
+@shared_task
+def airesponsegeneration(transcript, id):
+    response=final_response(transcript=transcript)
+    data=get_object_or_404(Summary, id=id)
+    data.summary=response
+    data.save()
+    return f"ai_response saved for id:{id}"

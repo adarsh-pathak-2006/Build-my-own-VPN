@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+GEMINI_API_KEY="jndfsbdfjkfsjlfbs"
 
 # Application definition
 
