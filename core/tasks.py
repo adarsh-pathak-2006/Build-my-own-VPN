@@ -15,14 +15,16 @@ def TranscriptFetch(id):
     final=''
     for snippet in transcript:
         final=final+snippet.text
+    response=final_response(transcript=final)
     obj.transcript=final
+    obj.summary=response
     obj.save()
-    return f"transcript saved for id:{id}"
+    return f"transcript and ai_response saved for id:{id}"
 
-@shared_task
-def airesponsegeneration(transcript, id):
-    response=final_response(transcript=transcript)
-    data=get_object_or_404(Summary, id=id)
-    data.summary=response
-    data.save()
-    return f"ai_response saved for id:{id}"
+# @shared_task
+# def airesponsegeneration(transcript, id):
+#     response=final_response(transcript=transcript)
+#     data=get_object_or_404(Summary, id=id)
+#     data.summary=response
+#     data.save()
+#     return f"ai_response saved for id:{id}"
