@@ -5,8 +5,8 @@ from authentication.serializer import UserGetSerializer
 class SummaryGenerationListSerializer(ModelSerializer):
     class Meta:
         model=Summary
-        fields=['user', 'link', 'time']
-        read_only_fields=['user', 'link', 'time']
+        fields=['id', 'user', 'link', 'time']
+        read_only_fields=['id', 'user', 'link', 'time']
 
 class SummaryGenerationSerializer(ModelSerializer):
     user=UserGetSerializer(read_only=True)

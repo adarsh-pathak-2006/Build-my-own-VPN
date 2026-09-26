@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,7 +34,7 @@ ALLOWED_HOSTS = ['*']
 OLLAMA_HOST = os.environ.get('OLLAMA_HOST', '')
 OTP_SERVICE_REFID = os.environ.get('OTP_SERVICE_REFID', '')
 OTP_SERVICE_IP = os.environ.get('OTP_SERVICE_IP', '')
-OTP_SERVICE_URL = f"{OTP_SERVICE_IP}/{OTP_SERVICE_REFID}"
+OTP_SERVICE_URL = f"{OTP_SERVICE_IP.rstrip('/')}/getotp/{OTP_SERVICE_REFID}/"
 
 # Application definition
 
@@ -125,7 +126,7 @@ USE_TZ = True
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://127.0.0.1:6379/3",
     }
 }
 
@@ -140,7 +141,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/2"
 
 CELERY_ACCEPT_CONTENT = ["json"]
 
@@ -150,10 +151,23 @@ CELERY_RESULT_SERIALIZER = "json"
 
 CELERY_TIMEZONE = "UTC"
 
-CELERY_TASK_ROUTES = {
-    "authentication.tasks.OTPCreation": {
-        "queue": "otp"
-    }
-}
+# CELERY_TASK_ROUTES = {
+#     "authentication.tasks.OTPCreation": {
+#         "queue": "otp"
+#     }
+# }
 
 CORS_ALLOW_ALL_ORIGINS = True
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}

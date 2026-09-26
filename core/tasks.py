@@ -21,17 +21,24 @@ def TranscriptFetch(id):
             video_id = parsed_url.path.split('/')[2]
     
     if not video_id:
-        raise ValueError(f"Invalid YouTube URL: {obj.link}")
+        obj.summary = "Invalid YouTube URL provided."
+        obj.save()
+        return f"Invalid YouTube URL: {obj.link}"
         
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
-    final=''
-    for snippet in transcript:
-        final=final+snippet['text']
-    response=final_response(transcript=final)
-    obj.transcript=final
-    obj.summary=response
-    obj.save()
-    return f"transcript and ai_response saved for id:{id}"
+    try:
+        transcript = YouTubeTranscriptApi().fetch(video_id)
+        final=''
+        for snippet in transcript:
+            final=final+snippet.text
+        response=final_response(transcript=final)
+        obj.transcript=final
+        obj.summary=response
+        obj.save()
+        return f"transcript and ai_response saved for id:{id}"
+    except Exception as e:
+        obj.summary = "Sorry, we couldn't process this video. It may not have subtitles available."
+        obj.save()
+        return f"Failed to process video {video_id}: {str(e)}"
 
 # @shared_task
 # def airesponsegeneration(transcript, id):
