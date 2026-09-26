@@ -12,7 +12,6 @@ class GeneratedSummaryListAPI(APIView):
         data=paginator.paginate_queryset(Summary.objects.select_related('user').filter(user=self.request.user).order_by("-time"))
         serial=SummaryGenerationListSerializer(data, many=True)
         return paginator.get_paginated_response(serial.data)
-        return response
 
 class GeneratedSummaryDetailAPI(RetrieveAPIView):
     serializer_class=SummaryGenerationSerializer
